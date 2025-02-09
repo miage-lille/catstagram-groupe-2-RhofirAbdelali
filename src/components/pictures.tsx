@@ -1,5 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
+import { useSelector, useDispatch } from 'react-redux';
+import { picturesSelector } from '../reducer';
 
 const Container = styled.div`
   padding: 1rem;
@@ -18,7 +20,21 @@ const Image = styled.img`
   }
 `;
 const Pictures = () => {
-  return null;
+  const pictures = useSelector(picturesSelector);
+  const dispatch = useDispatch();
+
+  return (
+    <Container>
+      {pictures.map((picture, index) => (
+        <Image 
+          key={index} 
+          src={picture.previewFormat} 
+          alt={`Cat ${index}`} 
+          onClick={() => dispatch({ type: 'SELECT_PICTURE', picture })}
+        />
+      ))}
+    </Container>
+  );
 };
 
 export default Pictures;
