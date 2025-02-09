@@ -12,7 +12,6 @@ const App = () => (
       <Counter />
       <Pictures />
       <ModalPortal />
-      <div>Hello World ! Go to build your Catstagram 💪 !</div>
     </>
   </Provider>
 );
