@@ -1,9 +1,10 @@
-import { Loop, liftState } from 'redux-loop';
+import { Loop, liftState, loop, Cmd } from 'redux-loop';
 import { compose } from 'redux';
 import { Actions } from './types/actions.type';
-import fakeData from './fake-datas.json';
 import { Picture } from './types/picture.type';
 import { Option, none, some } from 'fp-ts/Option';
+import { cmdFetch } from './commands';
+import { fetchCatsRequest } from './actions';
 
 export type State = {
   counter: number;
@@ -13,7 +14,7 @@ export type State = {
  
 export const defaultState: State = {
   counter: 3,
-  pictures: fakeData.slice(0, 3),
+  pictures: [],
   selectedPicture: none,
 };
 
@@ -21,15 +22,23 @@ export const reducer = (state: State | undefined, action: Actions): State | Loop
   if (!state) return defaultState; // mandatory by redux
   switch (action.type) {
     case 'INCREMENT':
-      return { ...state, counter: state.counter + 1, pictures: fakeData.slice(0, state.counter + 1),};
+      const newCounterIncrement = state.counter + 1;
+      return loop(
+        { ...state, counter: newCounterIncrement },
+        Cmd.action(fetchCatsRequest(newCounterIncrement))
+      );
     case 'DECREMENT':
-      return { ...state, counter: Math.max(3, state.counter - 1), pictures: fakeData.slice(0, state.counter - 1), };
+      const newCounterDecrement = Math.max(3, state.counter - 1);
+      return loop(
+        { ...state, counter: newCounterDecrement },
+        Cmd.action(fetchCatsRequest(newCounterDecrement))
+      );
     case 'SELECT_PICTURE':
         return { ...state, selectedPicture: some(action.picture) };
     case 'CLOSE_MODAL':
       return { ...state, selectedPicture: none };
     case 'FETCH_CATS_REQUEST':
-      throw 'Not Implemented';
+      return loop(state, cmdFetch(action));
     case 'FETCH_CATS_COMMIT':
       throw 'Not Implemented';
     case 'FETCH_CATS_ROLLBACK':
