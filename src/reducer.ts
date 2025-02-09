@@ -5,16 +5,17 @@ import { Picture } from './types/picture.type';
 import { Option, none, some } from 'fp-ts/Option';
 import { cmdFetch } from './commands';
 import { fetchCatsRequest } from './actions';
+import { ApiState } from './types/api.type';
 
 export type State = {
   counter: number;
-  pictures: Picture[];
+  pictures: ApiState;
   selectedPicture: Option<Picture>;
 };
  
 export const defaultState: State = {
   counter: 3,
-  pictures: [],
+  pictures: { status: 'loading' }, 
   selectedPicture: none,
 };
 
@@ -38,11 +39,11 @@ export const reducer = (state: State | undefined, action: Actions): State | Loop
     case 'CLOSE_MODAL':
       return { ...state, selectedPicture: none };
     case 'FETCH_CATS_REQUEST':
-      return loop(state, cmdFetch(action));
+      return loop({ ...state, pictures: { status: 'loading' } }, cmdFetch(action));
     case 'FETCH_CATS_COMMIT':
-      throw 'Not Implemented';
+      return { ...state, pictures: { status: 'success', pictures: action.payload } };
     case 'FETCH_CATS_ROLLBACK':
-      throw 'Not Implemented';
+      return { ...state, pictures: { status: 'failure', error: action.error.message } };
   }
 };
 
@@ -50,7 +51,10 @@ export const counterSelector = (state: State) => {
   return Math.max(3, state.counter);
 };
 export const picturesSelector = (state: State) => {
-  return state.pictures.slice(0, state.counter);
+  if (state.pictures.status === 'success') {
+    return state.pictures.pictures.slice(0, state.counter);
+  }
+  return [];
 };
 export const getSelectedPicture = (state: State) => {
   return state.selectedPicture;
