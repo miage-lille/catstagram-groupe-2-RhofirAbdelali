@@ -18,18 +18,18 @@ const getPayload = (): fc.Arbitrary<Picture[]> => fc.array(getPictureArb());
 const getFetchCatsRequestAction = (counter: number): fc.Arbitrary<FetchCatsRequest> =>
   fc.record({
     type: fc.constant('FETCH_CATS_REQUEST'),
-    path: fc.constant(`https://pixabay.com/api/?key=24523143-8a90135b40ac6e775ba6758cb&per_page=${counter}&q=cat`),
+    path: fc.constant(`https://pixabay.com/api/?key=46958139-32252d33a6aeb6e397c7c1a61&per_page=${counter}&q=cat`),
     method: fc.constant('GET'),
   });
 
 const getSomeFromPicture = (picture: fc.Arbitrary<Picture>): fc.Arbitrary<O.Option<Picture>> => picture.map(O.some);
 const getNone = (): fc.Arbitrary<O.Option<Picture>> => fc.constant(O.none);
 
-const getLoadingArb = (): fc.Arbitrary<Loading> => fc.record({ kind: fc.constant('LOADING') });
+const getLoadingArb = (): fc.Arbitrary<Loading> => fc.record({ status: fc.constant('loading') });
 const getSuccessArb = (): fc.Arbitrary<Success> =>
-  fc.record({ kind: fc.constant('SUCCESS'), pictures: fc.array(getPictureArb()) });
+  fc.record({ status: fc.constant('success'), pictures: fc.array(getPictureArb()) });
 const getFailureArb = (): fc.Arbitrary<Failure> =>
-  fc.record({ kind: fc.constant('FAILURE'), error: fc.constant('error') });
+  fc.record({ status: fc.constant('failure'), error: fc.constant('error') });
 
 const getPictures = (): fc.Arbitrary<any> => fc.oneof(getLoadingArb(), getSuccessArb(), getFailureArb());
 
