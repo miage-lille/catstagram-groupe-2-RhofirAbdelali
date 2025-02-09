@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { getSelectedPicture } from '../reducer';
-
+import { isSome } from 'fp-ts/Option';
 
 const Container = styled.div`
   position: fixed; /* Stay in place */
@@ -37,10 +37,10 @@ const Image = styled.img`
 const Modal = () => {
   const selectedPicture = useSelector(getSelectedPicture);
   const dispatch = useDispatch();
-  if (!selectedPicture) return null;
+  if (!isSome(selectedPicture)) return null;
   return (
     <Container>
-      <Image src={selectedPicture.largeFormat} alt="Large Cat" />
+      <Image src={selectedPicture.value.largeFormat} alt="Large Cat" />
       <Button onClick={() => dispatch({ type: 'CLOSE_MODAL' })}>X</Button>
     </Container>
   );

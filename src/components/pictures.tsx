@@ -1,7 +1,9 @@
 import React from 'react';
 import styled from 'styled-components';
 import { useSelector, useDispatch } from 'react-redux';
-import { picturesSelector } from '../reducer';
+import { picturesSelector, getSelectedPicture } from '../reducer';
+import Modal from './modal';
+import { isSome } from 'fp-ts/Option';
 
 const Container = styled.div`
   padding: 1rem;
@@ -22,7 +24,7 @@ const Image = styled.img`
 const Pictures = () => {
   const pictures = useSelector(picturesSelector);
   const dispatch = useDispatch();
-
+  const selectedPicture = useSelector(getSelectedPicture);
   return (
     <Container>
       {pictures.map((picture, index) => (
@@ -33,6 +35,7 @@ const Pictures = () => {
           onClick={() => dispatch({ type: 'SELECT_PICTURE', picture })}
         />
       ))}
+      {isSome(selectedPicture) && <Modal />}
     </Container>
   );
 };
